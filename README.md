@@ -28,7 +28,7 @@ You can rearrange and resize the grid yourself, straight on the site.
 1. Make a GitHub token: **Settings → Developer settings → Fine-grained tokens → Generate new token**. Under **Repository access**, pick only this repo. Under **Permissions → Contents**, choose **Read and write**.
 2. Open the site with `?edit` at the end of the address, for example `https://your-site/?edit`.
 3. Paste the token. The page asks GitHub whether that token can write to this repo, and only then turns editing on. Without `?edit` the editor code isn't set up at all, and even with it nothing can be dragged until the token checks out. The token is kept in that browser only (localStorage). "Forget token" removes it.
-4. Drag a tile to move it. A ghost shows where it will land, and the other tiles slide out of the way and pack up so there are never overlaps or gaps. Drag a tile's corner to resize it. Each tile only snaps to shapes that suit its art (1×1, 2×1, 1×2 or 2×2, depending on the tile), and tiles with one shape have no corner handle.
+4. Drag a tile to move it. A ghost shows where it will land, and the other tiles slide out of the way and pack up so there are never overlaps or gaps. Drag any edge or corner of a tile to resize it, from 1×1 up to 4 columns wide and 3 rows tall (Bento, Weather, Wind and Message me need at least 2 columns). When you let go, the grid tidies itself so every tile takes the first spot that fits.
 5. **Save** commits `layout.json` to this repo. The site reads that file on load, so visitors see the new arrangement once your host serves the new commit.
 
 Notes:

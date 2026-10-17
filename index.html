@@ -177,12 +177,25 @@ a.tile{display:block;text-decoration:none;color:inherit}
 /* layout editor (owner only, unlocked with a GitHub token) */
 .grid.editing .tile{cursor:grab;touch-action:none;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 55%,transparent)}
 .grid.editing .tile:hover{transform:none}
-.grid.editing .tile > *:not(.ed-rz){pointer-events:none}
+.grid.editing .tile > *:not(.ed-h){pointer-events:none}
 .grid.editing .cap{opacity:.45}
 .grid.editing .tile.ed-drag{cursor:grabbing;z-index:50;transition:none!important;box-shadow:0 0 0 1.5px var(--accent),0 28px 50px -22px rgba(0,0,0,.45)}
 .ed-ghost{border-radius:var(--r);background:color-mix(in srgb,var(--accent) 7%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent);pointer-events:none;align-self:start;height:calc(100% - var(--capH));transition:opacity .15s}
-.ed-rz{position:absolute;right:7px;bottom:7px;width:16px;height:16px;z-index:30;cursor:nwse-resize;display:none;touch-action:none;border-right:2.5px solid var(--accent);border-bottom:2.5px solid var(--accent);border-bottom-right-radius:6px}
-.grid.editing .ed-rz{display:block}
+.ed-h{position:absolute;z-index:30;display:none;touch-action:none}
+.grid.editing .ed-h{display:block}
+.ed-h[data-dir="n"],.ed-h[data-dir="s"]{left:22px;right:22px;height:14px;cursor:ns-resize}
+.ed-h[data-dir="n"]{top:0}.ed-h[data-dir="s"]{bottom:0}
+.ed-h[data-dir="e"],.ed-h[data-dir="w"]{top:22px;bottom:22px;width:14px;cursor:ew-resize}
+.ed-h[data-dir="e"]{right:0}.ed-h[data-dir="w"]{left:0}
+.ed-h[data-dir="nw"],.ed-h[data-dir="ne"],.ed-h[data-dir="sw"],.ed-h[data-dir="se"]{width:22px;height:22px}
+.ed-h[data-dir="nw"]{top:0;left:0;cursor:nwse-resize}.ed-h[data-dir="se"]{bottom:0;right:0;cursor:nwse-resize}
+.ed-h[data-dir="ne"]{top:0;right:0;cursor:nesw-resize}.ed-h[data-dir="sw"]{bottom:0;left:0;cursor:nesw-resize}
+.ed-h::after{content:"";position:absolute;background:var(--accent);border-radius:3px;opacity:.55;transition:opacity .15s,transform .15s}
+.ed-h[data-dir="n"]::after,.ed-h[data-dir="s"]::after{left:50%;width:30px;height:4px;margin-left:-15px;top:5px}
+.ed-h[data-dir="e"]::after,.ed-h[data-dir="w"]::after{top:50%;height:30px;width:4px;margin-top:-15px;left:5px}
+.ed-h[data-dir$="w"][data-dir^="n"]::after,.ed-h[data-dir="ne"]::after,.ed-h[data-dir="sw"]::after,.ed-h[data-dir="se"]::after{width:9px;height:9px;border-radius:50%;top:7px;left:7px}
+.ed-h:hover::after,.ed-h.on::after{opacity:1;transform:scale(1.25)}
+.grid.editing .tile.ed-size{z-index:40;box-shadow:0 0 0 2px var(--accent),0 20px 40px -20px rgba(0,0,0,.35)}
 .ed-bar{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));translate:-50% 0;z-index:400;display:flex;align-items:center;gap:4px;padding:5px;border-radius:999px;background:var(--paper);box-shadow:0 0 0 1px var(--line),0 14px 30px -14px rgba(0,0,0,.35);font-size:13px}
 .ed-bar[hidden],.ed-modal[hidden]{display:none}
 .ed-bar .lbl{padding:0 10px 0 12px;color:var(--ink2);white-space:nowrap}
@@ -373,7 +386,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
   </form>
 </div>
 <div class="ed-bar" id="edBar" hidden role="toolbar" aria-label="Layout editor">
-  <span class="lbl">Drag to move · corner to resize</span>
+  <span class="lbl">Drag to move · edges or corners to resize</span>
   <button id="edReset">Reset</button><button id="edForget">Forget token</button><button id="edDone">Cancel</button><button class="primary" id="edSave">Save</button>
 </div>
 <div class="ed-msg" id="edMsg" aria-live="polite"></div>
@@ -751,8 +764,8 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
 // only starts after a token has been checked with GitHub on this visit.
 (function(){
   const DEF={pond:[0,0,2,2],baon:[2,0,2,1],clock:[2,1,1,1],rooms:[3,1,1,2],weather:[0,2,2,1],pace:[2,2,1,1],atlas:[0,3,1,2],wind:[1,3,2,1],grow:[3,3,1,2],hollow:[1,4,1,2],serene:[2,4,1,2],receipt:[0,5,1,2],motion:[3,5,1,2],msg:[1,6,2,1]};
-  // shapes each tile is allowed to take, so the art never gets stretched into an awkward strip
-  const SIZES={pond:[[2,2],[2,1]],baon:[[2,1],[2,2]],clock:[[1,1],[2,2]],rooms:[[1,2],[2,2]],weather:[[2,1]],pace:[[1,1]],atlas:[[1,2],[2,2]],wind:[[2,1]],grow:[[1,2],[2,2]],hollow:[[1,1],[1,2],[2,2]],serene:[[1,2],[2,2]],receipt:[[1,2],[2,2]],motion:[[1,1],[1,2],[2,1],[2,2]],msg:[[2,1]]};
+  // any size from 1x1 up to 4 wide x 3 tall; a few tiles need at least 2 columns for their contents
+  const MINW={baon:2,weather:2,wind:2,msg:2},MAXH=3,minW=id=>MINW[id]||1;
   const REPO='InitialPhantom/lyn.-2nd-website-template',FILE='layout.json',BRANCH='main',COLS=4;
   const grid=document.querySelector('.grid'),wide=matchMedia('(min-width:641px)'),ids=Object.keys(DEF);
   const capOf=id=>document.querySelector(`.cap[data-for="${id}"]`);
@@ -762,7 +775,7 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
   // no-overlap reflow: the moved tile keeps its spot, others are pushed down, then everything floats up to close gaps
   function resolve(L,fixed){const out={},order=ids.filter(i=>L[i]).sort((p,q)=>(p===fixed?-1:q===fixed?1:0)||L[p][1]-L[q][1]||L[p][0]-L[q][0]);
     for(const id of order){const v=[...L[id]];v[2]=Math.min(v[2],COLS);v[0]=clamp(v[0],0,COLS-v[2]);v[1]=Math.max(0,v[1]);if(id!==fixed)while(Object.values(out).some(o=>hit(o,v)))v[1]++;out[id]=v}
-    const up=o=>{const done={};for(const id of Object.keys(o).sort((p,q)=>o[p][1]-o[q][1]||o[p][0]-o[q][0])){const v=o[id];while(v[1]>0){v[1]--;if(Object.values(done).some(x=>hit(x,v))){v[1]++;break}}done[id]=v}return done};
+    const up=o=>{const done={};if(fixed&&o[fixed])done[fixed]=o[fixed];for(const id of Object.keys(o).filter(i=>i!==fixed).sort((p,q)=>o[p][1]-o[q][1]||o[p][0]-o[q][0])){const v=o[id];while(v[1]>0){v[1]--;if(Object.values(done).some(x=>hit(x,v))){v[1]++;break}}done[id]=v}return done};
     let done=up(out);
     // close holes: move the next tile below that fits into each gap, then float everything up again
     for(let pass=0;pass<40;pass++){const occ=new Set();let maxR=0;for(const v of Object.values(done)){maxR=Math.max(maxR,v[1]+v[3]);for(let x=v[0];x<v[0]+v[2];x++)for(let y=v[1];y<v[1]+v[3];y++)occ.add(x+','+y)}
@@ -772,6 +785,12 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
         for(const id of cand){const v=[x,y,done[id][2],done[id][3]];if(Object.entries(done).some(([k,o])=>k!==id&&hit(o,v)))continue;done[id]=v;done=up(done);moved=true;break scan}}
       if(!moved)break}
     return done}
+  // final tidy: every tile, in reading order, takes the first free spot that fits (closes gaps)
+  function pack(L){const order=ids.filter(i=>L[i]).sort((p,q)=>L[p][1]-L[q][1]||L[p][0]-L[q][0]),occ=new Set(),out={};
+    for(const id of order){const w=Math.min(L[id][2],COLS),h=L[id][3];let done=false;
+      for(let y=0;!done&&y<200;y++)for(let x=0;x<=COLS-w&&!done;x++){let ok=true;for(let i=x;i<x+w&&ok;i++)for(let j=y;j<y+h;j++)if(occ.has(i+','+j)){ok=false;break}
+        if(ok){out[id]=[x,y,w,h];for(let i=x;i<x+w;i++)for(let j=y;j<y+h;j++)occ.add(i+','+j);done=true}}}
+    return out}
   let L=null;
   function area(v){return `${v[1]+1} / ${v[0]+1} / span ${v[3]} / span ${v[2]}`}
   function place(id,v){const el=document.getElementById(id),cap=capOf(id);if(!el)return;if(v&&wide.matches){el.style.gridArea=area(v);if(cap)cap.style.gridArea=area(v)}else{el.style.gridArea='';if(cap)cap.style.gridArea=id}}
@@ -781,7 +800,7 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
     for(const e of els){if(e.id===skip)continue;const a=first.get(e),b=e.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;if(!dx&&!dy)continue;
       e.style.transition='none';e.style.transform=`translate(${dx}px,${dy}px)`;requestAnimationFrame(()=>{e.style.transition='transform .32s cubic-bezier(.2,.9,.25,1)';e.style.transform='';setTimeout(()=>{e.style.transition=''},340)})}}
   wide.addEventListener('change',()=>apply(L));
-  fetch(FILE,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j||!j.tiles)return;const T={};for(const id of ids){const t=j.tiles[id];T[id]=t?[t.col-1,t.row-1,t.w,t.h]:[...DEF[id]]}apply(resolve(T))}).catch(()=>{});
+  fetch(FILE,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j||!j.tiles)return;const T={};for(const id of ids){const t=j.tiles[id];T[id]=t?[t.col-1,t.row-1,t.w,t.h]:[...DEF[id]]}apply(pack(resolve(T)))}).catch(()=>{});
 
   if(!(new URLSearchParams(location.search).has('edit')||location.hash==='#edit'))return; // editor only exists on ?edit
 
@@ -799,23 +818,28 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
     const ok=await canWrite();$q('#edGo').disabled=false;$q('#edTok').value='';if(ok===true){unlocked=true;$q('#edErr').textContent='';$q('#edModal').hidden=true;start()}else{tokSet('');$q('#edErr').textContent=ok}});
   const tiles=ids.map(id=>document.getElementById(id)).filter(Boolean);
   function start(){if(!unlocked)return;backup=copy(L||DEF);apply(resolve(copy(L||DEF)));
-    tiles.forEach(t=>{if(!t.querySelector('.ed-rz')&&SIZES[t.id].length>1){const r=document.createElement('span');r.className='ed-rz';r.setAttribute('aria-hidden','true');t.appendChild(r)}});
+    tiles.forEach(t=>{if(t.querySelector('.ed-h'))return;for(const dir of['n','s','e','w','nw','ne','sw','se']){const h=document.createElement('span');h.className='ed-h';h.dataset.dir=dir;h.setAttribute('aria-hidden','true');t.appendChild(h)}});
     grid.classList.add('editing');$q('#edBar').hidden=false;say('Editing. Visitors don’t see this.')}
-  function stop(){grid.classList.remove('editing');$q('#edBar').hidden=true;ghost?.remove();ghost=null;tiles.forEach(t=>t.querySelectorAll('.ed-rz').forEach(r=>r.remove()))}
+  function stop(){grid.classList.remove('editing');$q('#edBar').hidden=true;ghost?.remove();ghost=null;tiles.forEach(t=>t.querySelectorAll('.ed-h').forEach(r=>r.remove()))}
   function metrics(){const cs=getComputedStyle(grid),cg=parseFloat(cs.columnGap)||0,rg=parseFloat(cs.rowGap)||0,gr=grid.getBoundingClientRect(),cw=(gr.width-3*cg)/4,rh=parseFloat(cs.gridTemplateRows.split(' ')[0])||cw;return{gr,cx:cw+cg,ry:rh+rg}}
   let d=null;
   grid.addEventListener('pointerdown',e=>{if(!unlocked||!grid.classList.contains('editing'))return;const t=e.target.closest('.tile');if(!t||!L[t.id])return;e.preventDefault();
-    const m=metrics(),r=t.getBoundingClientRect();d={id:t.id,el:t,mode:e.target.classList.contains('ed-rz')?'size':'move',x:e.clientX,y:e.clientY,ox:r.left-m.gr.left,oy:r.top-m.gr.top,v:[...L[t.id]],m,last:L[t.id].join()};
+    const m=metrics(),r=t.getBoundingClientRect();const dir=e.target.classList.contains('ed-h')?e.target.dataset.dir:'';if(dir){e.target.classList.add('on');t.classList.add('ed-size')}
+    d={id:t.id,el:t,dir,grip:dir?e.target:null,mode:dir?'size':'move',x:e.clientX,y:e.clientY,ox:r.left-m.gr.left,oy:r.top-m.gr.top,v:[...L[t.id]],m,last:L[t.id].join()};
     if(d.mode==='move'){t.classList.add('ed-drag');ghost=document.createElement('div');ghost.className='ed-ghost';ghost.style.gridArea=area(L[t.id]);grid.appendChild(ghost)}
     t.setPointerCapture?.(e.pointerId)});
   addEventListener('pointermove',e=>{if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;let nv=[...d.v];
     if(d.mode==='move'){d.el.style.transform=`translate(${dx}px,${dy}px) scale(1.015)`;nv[0]=clamp(Math.round((d.ox+dx)/d.m.cx),0,COLS-nv[2]);nv[1]=Math.max(0,Math.round((d.oy+dy)/d.m.ry))}
-    else{const ww=d.v[2]+dx/d.m.cx,hh=d.v[3]+dy/d.m.ry;let best=null,bd=1e9;for(const[w,h]of SIZES[d.id]){if(d.v[0]+w>COLS)continue;const k=(w-ww)**2+(h-hh)**2;if(k<bd){bd=k;best=[w,h]}}if(best){nv[2]=best[0];nv[3]=best[1]}}
+    else{const dc=Math.round(dx/d.m.cx),dr=Math.round(dy/d.m.ry),[x0,y0,w0,h0]=d.v,mw=minW(d.id);
+      if(d.dir.includes('e'))nv[2]=clamp(w0+dc,mw,COLS-x0);
+      if(d.dir.includes('w')){const nx=clamp(x0+dc,0,x0+w0-mw);nv[0]=nx;nv[2]=w0+(x0-nx)}
+      if(d.dir.includes('s'))nv[3]=clamp(h0+dr,1,MAXH);
+      if(d.dir.includes('n')){const ny=clamp(y0+dr,Math.max(0,y0+h0-MAXH),y0+h0-1);nv[1]=ny;nv[3]=h0+(y0-ny)}}
     if(nv.join()===d.last)return;d.last=nv.join();const next=copy(L);next[d.id]=nv;const res=resolve(next,d.id);
     if(d.mode==='move'){const target=res[d.id];flip(Object.assign(copy(res),{[d.id]:d.v}),d.id);L[d.id]=target;ghost.style.gridArea=area(target)}else flip(res)});
-  addEventListener('pointerup',()=>{if(!d)return;const t=d.el;if(d.mode==='move'){const a=t.getBoundingClientRect();place(d.id,L[d.id]);t.classList.remove('ed-drag');const b=t.getBoundingClientRect();
+  addEventListener('pointerup',()=>{if(!d)return;const t=d.el;d.grip?.classList.remove('on');t.classList.remove('ed-size');if(d.mode==='move'){const a=t.getBoundingClientRect();place(d.id,L[d.id]);t.classList.remove('ed-drag');const b=t.getBoundingClientRect();
       t.style.transition='none';t.style.transform=`translate(${a.left-b.left}px,${a.top-b.top}px)`;requestAnimationFrame(()=>{t.style.transition='transform .3s cubic-bezier(.2,.9,.25,1)';t.style.transform='';setTimeout(()=>{t.style.transition=''},320)});ghost?.remove();ghost=null}
-    d=null});
+    d=null;setTimeout(()=>flip(pack(L)),RM?0:60)});
   $q('#edReset').addEventListener('click',()=>{flip(copy(DEF));say('Back to the default arrangement. Save to keep it.')});
   $q('#edDone').addEventListener('click',()=>{flip(backup);stop();say('Changes discarded.')});
   $q('#edForget').addEventListener('click',()=>{tokSet('');unlocked=false;flip(backup);stop();say('Token removed from this browser.')});
