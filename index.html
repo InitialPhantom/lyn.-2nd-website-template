@@ -607,7 +607,7 @@ $('#compose').addEventListener('submit',e=>{e.preventDefault();const text=msgIn.
   const ty=bubble('typing');ty.innerHTML='<i></i><i></i><i></i>';
   setTimeout(()=>{ty.remove();
     if(CONTACT_EMAIL){bubble('in','Thanks! Opening your email so it reaches me.');location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('Hello from your site')+'&body='+encodeURIComponent(text)}
-    else bubble('in','Thanks for the message! I\'ll get back to you soon.');ping(7,.05)},1100)});
+    else bubble('in','Thanks! My inbox isn\'t connected here yet, so this message wasn\'t sent.');ping(7,.05)},1100)});
 
 /* ---------- word split, filters, theme ---------- */
 $$('[data-split]').forEach(el=>{el.innerHTML=[...el.textContent].map((ch,i)=>`<span style="--i:${i}">${ch===' '?'&nbsp;':ch}</span>`).join('')});
