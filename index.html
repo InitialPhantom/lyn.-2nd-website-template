@@ -141,6 +141,12 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .card canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;transition:opacity .45s ease}
 .card:hover canvas,.card:focus-visible canvas{opacity:0}
 .card .n{position:absolute;left:10px;bottom:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--ink);background:color-mix(in srgb,var(--paper) 80%,transparent);padding:1px 6px;border-radius:6px}
+.rail-btn{position:absolute;top:calc(50% - 15px - 15px);z-index:4;width:30px;height:30px;border-radius:50%;background:var(--paper);color:var(--ink);display:grid;place-items:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.1),0 6px 14px -8px rgba(0,0,0,.35);transition:opacity .2s,transform .15s}
+.rail-btn svg{width:14px;height:14px}
+.rail-btn:active{transform:scale(.9)}
+.rail-btn[disabled]{opacity:0;pointer-events:none}
+.rail-btn.prev{left:6px}.rail-btn.next{right:6px}
 .dots{position:absolute;left:0;right:0;bottom:11px;display:flex;justify-content:center;gap:6px;pointer-events:none}
 .dots i{width:6px;height:6px;border-radius:3px;background:var(--ink3);transition:width .3s,background .3s}
 .dots i.on{width:16px;background:var(--ink)}
@@ -307,6 +313,8 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
       </a>
       <article class="tile" id="serene" data-cat="worlds" aria-label="Artwork from serene.aiart">
         <div class="rail" id="rail" aria-label="Artwork, drag or scroll sideways"></div><div class="dots" id="dots" aria-hidden="true"></div>
+        <button class="rail-btn prev" id="railPrev" aria-label="Previous piece"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="rail-btn next" id="railNext" aria-label="Next piece"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
       </article>
       <div class="cap" data-cat="worlds" style="grid-area:pond">Pond</div>
       <div class="cap" data-cat="toys" style="grid-area:baon">Baon</div>
@@ -671,7 +679,7 @@ const cards=[...rail.children];
 function nearest(){const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,bd=1e9;cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});return best}
 function snapTo(i){const c=cards[i];rail.scrollTo({left:c.offsetLeft+c.offsetWidth/2-rail.clientWidth/2,behavior:RM?'auto':'smooth'})}
 let liveI=-1;
-function markSides(){const k=nearest();cards.forEach((c,i)=>c.classList.toggle('side',i!==k));if(k!==liveI){liveI=k;media.forEach((m,i)=>{if(m&&m.tagName==='VIDEO'){if(i===k&&document.getElementById('lb').hidden)m.play().catch(()=>{});else m.pause()}})}[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===k))}
+function markSides(){const k=nearest();cards.forEach((c,i)=>c.classList.toggle('side',i!==k));if(k!==liveI){liveI=k;media.forEach((m,i)=>{if(m&&m.tagName==='VIDEO'){if(i===k&&document.getElementById('lb').hidden)m.play().catch(()=>{});else m.pause()}})}[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===k));$('#railPrev').disabled=k<=0;$('#railNext').disabled=k>=cards.length-1}
 function sizeRail(){const r=sereneT.getBoundingClientRect(),cw=Math.max(100,Math.min(r.width*.74,(r.height-54)*.5625));sereneT.style.setProperty('--cw',cw+'px');requestAnimationFrame(()=>{cards.forEach((c,i)=>ditherCard(c.querySelector('canvas'),i));markSides()})}
 new ResizeObserver(sizeRail).observe(sereneT);
 {let last=0;const vis={on:true};new IntersectionObserver(es=>es.forEach(e=>vis.on=e.isIntersecting)).observe(sereneT);
@@ -681,6 +689,8 @@ rail.addEventListener('scroll',()=>{cancelAnimationFrame(rail._r);rail._r=reques
   rail.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;down=true;moved=false;sx=e.clientX;sl=rail.scrollLeft});
   addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-sx;if(Math.abs(dx)>4&&!moved){moved=true;rail.classList.add('drag')}if(moved)rail.scrollLeft=sl-dx});
   addEventListener('pointerup',()=>{if(!down)return;down=false;if(moved){rail.classList.remove('drag');const k=nearest();snapTo(k);ping(k+2,.04);setTimeout(()=>moved=false,0)}})}
+$('#railPrev').addEventListener('click',()=>{const k=Math.max(0,nearest()-1);snapTo(k);ping(k+2,.04)});
+$('#railNext').addEventListener('click',()=>{const k=Math.min(cards.length-1,nearest()+1);snapTo(k);ping(k+2,.04)});
 rail.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const k=clamp(nearest()+(e.key==='ArrowRight'?1:-1),0,cards.length-1);snapTo(k);cards[k].focus({preventScroll:true})}});
 const lb=$('#lb');let lbI=0,lbFrom=null;
 function showLb(i){lbI=(i+ART.length)%ART.length;const a=ART[lbI],m=$('#lbMedia');m.replaceChildren(artEl(a));$('#lbMedia').querySelectorAll('video').forEach(v=>v.pause());$('#lbTitle').textContent=a.title;$('#lbLink').href=a.link||'https://www.instagram.com/serene.aiart/';$('#lbNum').textContent=String(lbI+1).padStart(2,'0')+' / '+String(ART.length).padStart(2,'0')}
