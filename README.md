@@ -15,7 +15,7 @@ To publish it with GitHub Pages, set Pages to deploy from the `main` branch, roo
 ## What's inside
 
 - **Profile**: a spinnable planet avatar (drag to spin, tap for night) and a short intro.
-- **Pieces**: Pond, Baon (Filipino packed lunches), One hand (24-hour clock), Rooms, Weather, Pace, Atlas, Wind, Grow, Hollowmere, Motion, Today's slip (an activity receipt that logs what you do on the page), and Message me (a small chat box).
+- **Pieces**: Pond, Baon (Filipino packed lunches), One hand (24-hour clock), Rooms, Weather, Pace, Atlas, Wind, Grow, Hollowmere, Motion, Today's slip (an activity receipt that logs what you do on the page), Message me (a small chat box), and a serene.aiart gallery row that opens each piece in a blurred in-page viewer.
 - **Pace dial**: speeds up or slows down every animation on the page.
 - **Sound**: soft chimes and an ambient wind loop, made with the Web Audio API. It can be muted from the footer.
 
@@ -24,5 +24,6 @@ Fonts are Public Sans and Geist Mono from Google Fonts. There are no other depen
 ## Placeholders to fill in
 
 - **Message me**: set `CONTACT_EMAIL` near the bottom of `index.html` to your address. "Send" then opens a pre-filled email to you. Until it's set, the tile tells visitors their message wasn't sent.
+- **serene.aiart gallery**: fill in the `ART` list near the bottom of `index.html`. Each entry takes an image `src` (for example `art/01.jpg`) and a `title`. Until then, soft gradient stand-ins show.
 - `#hollowmere` and `#motion` are placeholder links.
 - The "last posted" line is sample copy.
