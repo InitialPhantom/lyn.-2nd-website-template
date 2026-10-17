@@ -71,13 +71,13 @@ a{color:inherit}
 .gridwrap{container-type:inline-size;min-width:0}
 .grid{--capH:34px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:calc((100cqi - 3 * var(--gap)) / 4 + var(--capH));column-gap:var(--gap);row-gap:calc(var(--gap) - 6px);
   grid-template-areas:
-  "pond pond baon baon"
-  "pond pond clock rooms"
+  "serene serene baon baon"
+  "serene serene clock rooms"
   "weather weather pace rooms"
   "atlas wind wind grow"
   "atlas hollow receipt grow"
-  "serene serene receipt motion"
-  "serene serene msg msg"}
+  "pond pond receipt motion"
+  "pond pond msg msg"}
 .tile{position:relative;background:var(--tile);border-radius:var(--r);overflow:hidden;min-width:0;align-self:start;height:calc(100% - var(--capH));transition:background .3s,opacity .35s,filter .35s}
 .tile:hover{background:var(--tile-h)}
 .tile.off,.cap.off{opacity:.25;filter:grayscale(1)}
@@ -235,7 +235,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
   body{padding-inline:16px}
   :root{--gap:10px;--r:16px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:calc((100cqi - var(--gap)) / 2 + var(--capH));grid-template-areas:
-  "pond pond" "pond pond" "baon baon" "clock rooms" "pace rooms" "weather weather" "atlas grow" "atlas grow" "wind wind" "hollow motion" "receipt receipt" "msg msg" "serene serene" "serene serene"}
+  "serene serene" "serene serene" "baon baon" "clock rooms" "pace rooms" "weather weather" "atlas grow" "atlas grow" "wind wind" "hollow motion" "receipt receipt" "msg msg" "pond pond" "pond pond"}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -321,7 +321,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
       <div class="cap" data-cat="notes" style="grid-area:receipt">Today's slip</div>
       <div class="cap" data-cat="notes" style="grid-area:msg">Message me</div>
       <div class="cap" data-cat="worlds" style="grid-area:motion">Motion</div>
-      <div class="cap" data-cat="worlds" style="grid-area:serene">serene.aiart<a href="https://www.instagram.com/serene.aiart/" target="_blank" rel="noopener">Instagram ↗</a></div>
+      <div class="cap" data-cat="worlds" style="grid-area:serene"><a href="https://www.instagram.com/serene.aiart/" target="_blank" rel="noopener" style="margin-left:auto" aria-label="serene.aiart on Instagram">Instagram ↗</a></div>
     </div>
   </main>
 </div>
