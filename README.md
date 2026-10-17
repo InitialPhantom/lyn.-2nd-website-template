@@ -21,6 +21,21 @@ To publish it with GitHub Pages, set Pages to deploy from the `main` branch, roo
 
 Fonts are Public Sans and Geist Mono from Google Fonts. There are no other dependencies.
 
+## Layout editor (owner only)
+
+You can rearrange and resize the grid yourself, straight on the site.
+
+1. Make a GitHub token: **Settings → Developer settings → Fine-grained tokens → Generate new token**. Under **Repository access**, pick only this repo. Under **Permissions → Contents**, choose **Read and write**.
+2. Open the site with `?edit` at the end of the address, for example `https://your-site/?edit`.
+3. Paste the token. The page asks GitHub whether that token can write to this repo, and only then turns editing on. The token is kept in that browser only (localStorage). "Forget token" removes it.
+4. Drag a tile to move it, and drag its blue corner to resize it. Everything snaps to the 4-column grid. Tiles that overlap turn red, and Save stays off until nothing overlaps.
+5. **Save** commits `layout.json` to this repo. The site reads that file on load, so visitors see the new arrangement once your host serves the new commit.
+
+Notes:
+- The editor works on desktop and tablet widths. Phones keep the built-in stacked order.
+- It needs the site served from a real address or a local server (`python -m http.server`). The Claude preview link can't reach GitHub and can't pass `?edit`.
+- Delete `layout.json` to go back to the default arrangement.
+
 ## Placeholders to fill in
 
 - **Message me**: set `CONTACT_EMAIL` near the bottom of `index.html` to your address. "Send" then opens a pre-filled email to you. Until it's set, the tile tells visitors their message wasn't sent.
