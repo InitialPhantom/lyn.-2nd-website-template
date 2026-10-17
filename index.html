@@ -209,14 +209,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
     <canvas class="planet" id="planet" aria-label="A tiny planet. Drag to spin it, tap to switch day and night." role="img"></canvas>
     <h1>Hey, I'm <b>Lyn</b>.</h1>
     <p class="statement">I design <span class="hot w-worlds">concepts</span> and build <span class="hot w-tools" data-split>AI tools</span> and <span class="hot w-slow">plugins</span>.</p>
-    <p class="sub">From rough idea to working product, designed and shipped. <b>Open for freelance</b> and collaborations.</p>
     <div class="last mono">last posted <b>Hedge Hallway, part three</b></div>
-    <div class="tabs" role="group" aria-label="Filter pieces">
-      <button data-f="all" aria-pressed="true">All<sup>13</sup></button>
-      <button data-f="worlds" aria-pressed="false">Worlds<sup>6</sup></button>
-      <button data-f="toys" aria-pressed="false">Toys<sup>5</sup></button>
-      <button data-f="notes" aria-pressed="false">Notes<sup>2</sup></button>
-    </div>
   </aside>
 
   <main class="gridwrap" id="work" style="scroll-margin-top:100px">
@@ -611,7 +604,6 @@ $('#compose').addEventListener('submit',e=>{e.preventDefault();const text=msgIn.
 
 /* ---------- word split, filters, theme ---------- */
 $$('[data-split]').forEach(el=>{el.innerHTML=[...el.textContent].map((ch,i)=>`<span style="--i:${i}">${ch===' '?'&nbsp;':ch}</span>`).join('')});
-$$('.tabs button').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.f;$$('.tabs button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$$('.tile,.cap').forEach(t=>t.classList.toggle('off',f!=='all'&&t.dataset.cat!==f))}));
 
 readC();
 
