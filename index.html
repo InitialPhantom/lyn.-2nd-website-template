@@ -134,7 +134,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
   padding-inline:calc(50% - var(--cw,200px) / 2);cursor:grab;overscroll-behavior-x:contain;touch-action:pan-x;-webkit-user-select:none;user-select:none}
 .rail::-webkit-scrollbar{display:none}
 .rail.drag{cursor:grabbing;scroll-snap-type:none}
-.card{flex:none;position:relative;width:var(--cw,200px);aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--paper);scroll-snap-align:center;
+.card{flex:none;position:relative;width:var(--cw,200px);aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:var(--paper);scroll-snap-align:center;
   box-shadow:0 1px 2px rgba(0,0,0,.06),0 16px 30px -18px rgba(0,0,0,.35);transition:transform .45s cubic-bezier(.3,1.2,.5,1),opacity .45s;cursor:zoom-in}
 .card.side{transform:scale(.88);opacity:.55}
 .card .col{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--ph);-webkit-user-drag:none}
@@ -153,9 +153,11 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .lb.open{opacity:1}
 .lb figure{margin:0;justify-self:center;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:min(86vw,920px);transform:scale(.96) translateY(8px);transition:transform .4s cubic-bezier(.3,1.3,.5,1)}
 .lb.open figure{transform:none}
-.lb-media{position:relative;width:min(80vh,86vw,860px);aspect-ratio:1;border-radius:18px;overflow:hidden;background:var(--paper);box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
+.lb-media{position:relative;height:min(78vh,860px);max-width:86vw;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:var(--paper);box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
 .lb-media img,.lb-media .ph,.lb-media .col{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background-color:var(--paper)}
-.lb figcaption{display:flex;gap:12px;align-items:baseline;font-size:14px;font-weight:500;color:var(--ink)}
+.lb figcaption{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;align-items:baseline;font-size:14px;font-weight:500;color:var(--ink);max-width:min(560px,86vw);text-align:center}
+.lb-link{font-family:var(--f-mono);font-size:11px;color:var(--ink3);text-decoration:none}
+.lb-link:hover{color:var(--ink)}
 .lb figcaption span{font-family:var(--f-mono);font-size:11px;font-weight:400;color:var(--ink3)}
 .lb-btn{width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--ink);display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 18px -10px rgba(0,0,0,.25);justify-self:center;transition:transform .15s}
 .lb-btn:active{transform:scale(.92)}
@@ -164,7 +166,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
 @media (max-width:640px){
   .lb{grid-template-columns:minmax(0,1fr);padding-inline:16px}
   .lb .lb-prev,.lb .lb-next{display:none}
-  .lb-media{width:min(92vw,70vh)}
+  .lb-media{height:min(72vh,150vw)}
 }
 /* message me */
 .chat{position:absolute;left:16px;right:16px;top:14px;bottom:64px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;overflow:hidden}
@@ -328,7 +330,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Artwork viewer">
   <button class="lb-btn lb-x" id="lbX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous piece"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-  <figure><div class="lb-media" id="lbMedia"></div><figcaption><b id="lbTitle" style="font-weight:500"></b><span id="lbNum"></span></figcaption></figure>
+  <figure><div class="lb-media" id="lbMedia"></div><figcaption><b id="lbTitle" style="font-weight:500"></b><span id="lbNum"></span><a id="lbLink" class="lb-link" href="#" target="_blank" rel="noopener">Instagram ↗</a></figcaption></figure>
   <button class="lb-btn lb-next" id="lbNext" aria-label="Next piece"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
 <footer class="foot" id="hello">
@@ -640,34 +642,40 @@ scene($('#motion'),$('#motion canvas'),(c,w,h,t,dt,S)=>{
 });
 
 /* ---------- serene.aiart gallery ---------- */
-// Put each artwork's image in `src` (a file path like "art/01.jpg" or a data: URI) and its title.
-// Empty `src` shows a soft stand-in. Previews are dithered; hover or open a piece to see full colour.
+// Each piece: a video (or image) file next to index.html, its caption, and the Instagram post.
 const ART=[
-  {title:'Untitled 01',src:'',g:['#f3e7d9','#c9b6e2','#6f86b8',.32,.25]},
-  {title:'Untitled 02',src:'',g:['#fde6d6','#ee9f8c','#6e4f72',.7,.3]},
-  {title:'Untitled 03',src:'',g:['#eef6ec','#9fc7b4','#45685f',.4,.72]},
-  {title:'Untitled 04',src:'',g:['#faf4e6','#ddc597','#7f6646',.62,.4]}];
+  {title:'There are versions of you still wandering abandoned dreams.',src:'art/01.mp4',link:'https://www.instagram.com/serene.aiart/reel/DbrjwmsM5Qv/',g:['#f3e7d9','#c9b6e2','#6f86b8',.32,.25]},
+  {title:'The sky forgot where it ends.',src:'art/02.mp4',link:'https://www.instagram.com/serene.aiart/reel/DaUaCnjs3_P/',g:['#fde6d6','#ee9f8c','#6e4f72',.7,.3]},
+  {title:'Reality has a habit of blinking. Don\'t. Blink.',src:'art/03.mp4',link:'https://www.instagram.com/serene.aiart/reel/DaR6aOkvdQ-/',g:['#eef6ec','#9fc7b4','#45685f',.4,.72]}];
+const isVid=a=>/\.(mp4|webm|mov)(\?|$)/i.test(a.src);
 const phCss=a=>`radial-gradient(120% 100% at ${a.g[3]*100}% ${a.g[4]*100}%,${a.g[0]} 0%,${a.g[1]} 45%,${a.g[2]} 100%)`;
-const imgs=ART.map(a=>{if(!a.src)return null;const im=new Image();im.decoding='async';im.src=a.src;return im});
-function paintSrc(c,i,w,h){const a=ART[i],im=imgs[i];
-  if(im&&im.complete&&im.naturalWidth){const k=Math.max(w/im.naturalWidth,h/im.naturalHeight),dw=im.naturalWidth*k,dh=im.naturalHeight*k;c.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh);return}
+function mkVideo(src,controls){const v=document.createElement('video');v.src=src;v.muted=true;v.defaultMuted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';if(controls)v.controls=true;return v}
+// card media: the same element is the colour layer (shown on hover) and the source for the dithered canvas
+const media=ART.map(a=>{if(!a.src)return null;if(isVid(a)){const v=mkVideo(a.src);v.className='col';return v}const im=new Image();im.decoding='async';im.src=a.src;im.className='col';im.alt=a.title;return im});
+const ready=m=>m&&(m.tagName==='VIDEO'?m.readyState>=2:(m.complete&&m.naturalWidth));
+function paintSrc(c,i,w,h){const a=ART[i],m=media[i];
+  if(ready(m)){const mw=m.videoWidth||m.naturalWidth,mh=m.videoHeight||m.naturalHeight,k=Math.max(w/mw,h/mh),dw=mw*k,dh=mh*k;c.drawImage(m,(w-dw)/2,(h-dh)/2,dw,dh);return}
   const g=c.createRadialGradient(w*a.g[3],h*a.g[4],0,w*a.g[3],h*a.g[4],Math.hypot(w,h)*.9);g.addColorStop(0,a.g[0]);g.addColorStop(.45,a.g[1]);g.addColorStop(1,a.g[2]);c.fillStyle=g;c.fillRect(0,0,w,h)}
-function ditherCard(cv,i){const r=cv.getBoundingClientRect(),w=Math.max(2,Math.round(r.width)),h=Math.max(2,Math.round(r.height));cv.width=w;cv.height=h;
-  const c=cv.getContext('2d',{willReadFrequently:true});paintSrc(c,i,w,h);const im=c.getImageData(0,0,w,h),d=im.data,ink=hex(C.dither),pp=hex(C.paper);
-  for(let y=0,p=0;y<h;y++){const row=(y&7)<<3;for(let x=0;x<w;x++,p+=4){const L=(.299*d[p]+.587*d[p+1]+.114*d[p+2])/255;const k=clamp((1-L)*1.05-.1,0,1);const on=k>BAYER[row|(x&7)];const q=on?ink:pp;d[p]=q[0];d[p+1]=q[1];d[p+2]=q[2];d[p+3]=255}}
+function ditherCard(cv,i){const r=cv.getBoundingClientRect(),w=Math.max(2,Math.round(r.width)),h=Math.max(2,Math.round(r.height));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+  const c=cv.getContext('2d',{willReadFrequently:true});paintSrc(c,i,w,h);let im;try{im=c.getImageData(0,0,w,h)}catch{cv.style.display='none';return}
+  const d=im.data,ink=hex(C.dither),pp=hex(C.paper);
+  for(let y=0,p=0;y<h;y++){const row=(y&7)<<3;for(let x=0;x<w;x++,p+=4){const L=(.299*d[p]+.587*d[p+1]+.114*d[p+2])/255;const k=clamp((1-L)*1.05-.1,0,1);const q=k>BAYER[row|(x&7)]?ink:pp;d[p]=q[0];d[p+1]=q[1];d[p+2]=q[2];d[p+3]=255}}
   c.putImageData(im,0,0)}
-function artEl(a){if(a.src){const im=new Image();im.src=a.src;im.alt=a.title;im.decoding='async';im.className='col';return im}const d=document.createElement('div');d.className='ph col';d.style.setProperty('--ph',phCss(a));return d}
+function artEl(a){if(a.src&&isVid(a)){const v=mkVideo(a.src,true);v.className='col';v.autoplay=true;return v}if(a.src){const im=new Image();im.src=a.src;im.alt=a.title;im.decoding='async';im.className='col';return im}const d=document.createElement('div');d.className='ph col';d.style.setProperty('--ph',phCss(a));return d}
 const rail=$('#rail'),dots=$('#dots'),sereneT=$('#serene');let moved=false;
-ART.forEach((a,i)=>{const b=document.createElement('button');b.className='card';b.setAttribute('aria-label','Open '+a.title);b.appendChild(artEl(a));const cv=document.createElement('canvas');cv.setAttribute('aria-hidden','true');b.appendChild(cv);
+ART.forEach((a,i)=>{const b=document.createElement('button');b.className='card';b.setAttribute('aria-label','Open '+a.title);b.appendChild(media[i]||artEl(a));const cv=document.createElement('canvas');cv.setAttribute('aria-hidden','true');b.appendChild(cv);
   const n=document.createElement('span');n.className='n';n.textContent=String(i+1).padStart(2,'0');b.appendChild(n);
   b.addEventListener('click',e=>{if(moved){e.preventDefault();return}const cur=nearest();if(cur!==i){snapTo(i);return}openLb(i,b)});rail.appendChild(b);dots.appendChild(document.createElement('i'));
-  if(imgs[i])imgs[i].addEventListener('load',()=>ditherCard(cv,i))});
+  if(media[i])media[i].addEventListener(media[i].tagName==='VIDEO'?'loadeddata':'load',()=>ditherCard(cv,i))});
 const cards=[...rail.children];
 function nearest(){const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,bd=1e9;cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});return best}
 function snapTo(i){const c=cards[i];rail.scrollTo({left:c.offsetLeft+c.offsetWidth/2-rail.clientWidth/2,behavior:RM?'auto':'smooth'})}
-function markSides(){const k=nearest();cards.forEach((c,i)=>c.classList.toggle('side',i!==k));[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===k))}
-function sizeRail(){const r=sereneT.getBoundingClientRect(),cw=Math.max(110,Math.min(r.width*.6,(r.height-58)*.8));sereneT.style.setProperty('--cw',cw+'px');requestAnimationFrame(()=>{cards.forEach((c,i)=>ditherCard(c.querySelector('canvas'),i));markSides()})}
+let liveI=-1;
+function markSides(){const k=nearest();cards.forEach((c,i)=>c.classList.toggle('side',i!==k));if(k!==liveI){liveI=k;media.forEach((m,i)=>{if(m&&m.tagName==='VIDEO'){if(i===k&&document.getElementById('lb').hidden)m.play().catch(()=>{});else m.pause()}})}[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===k))}
+function sizeRail(){const r=sereneT.getBoundingClientRect(),cw=Math.max(100,Math.min(r.width*.6,(r.height-54)*.5625));sereneT.style.setProperty('--cw',cw+'px');requestAnimationFrame(()=>{cards.forEach((c,i)=>ditherCard(c.querySelector('canvas'),i));markSides()})}
 new ResizeObserver(sizeRail).observe(sereneT);
+{let last=0;const vis={on:true};new IntersectionObserver(es=>es.forEach(e=>vis.on=e.isIntersecting)).observe(sereneT);
+  (function tick(now){requestAnimationFrame(tick);if(!vis.on||!document.getElementById('lb').hidden||now-last<66)return;last=now;const m=media[liveI];if(m&&m.tagName==='VIDEO'&&!m.paused&&ready(m))ditherCard(cards[liveI].querySelector('canvas'),liveI)})(0)}
 rail.addEventListener('scroll',()=>{cancelAnimationFrame(rail._r);rail._r=requestAnimationFrame(markSides)},{passive:true});
 {let sx=0,sl=0,down=false;
   rail.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;down=true;moved=false;sx=e.clientX;sl=rail.scrollLeft});
@@ -675,9 +683,9 @@ rail.addEventListener('scroll',()=>{cancelAnimationFrame(rail._r);rail._r=reques
   addEventListener('pointerup',()=>{if(!down)return;down=false;if(moved){rail.classList.remove('drag');const k=nearest();snapTo(k);ping(k+2,.04);setTimeout(()=>moved=false,0)}})}
 rail.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const k=clamp(nearest()+(e.key==='ArrowRight'?1:-1),0,cards.length-1);snapTo(k);cards[k].focus({preventScroll:true})}});
 const lb=$('#lb');let lbI=0,lbFrom=null;
-function showLb(i){lbI=(i+ART.length)%ART.length;const a=ART[lbI],m=$('#lbMedia');m.replaceChildren(artEl(a));$('#lbTitle').textContent=a.title;$('#lbNum').textContent=String(lbI+1).padStart(2,'0')+' / '+String(ART.length).padStart(2,'0')}
-function openLb(i,from){lbFrom=from;showLb(i);lb.hidden=false;document.documentElement.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>lb.classList.add('open')));$('#lbX').focus({preventScroll:true});ping(4,.05);log('you opened '+ART[lbI].title.toLowerCase(),'art'+i)}
-function closeLb(){lb.classList.remove('open');document.documentElement.style.overflow='';snapTo(lbI);setTimeout(()=>{lb.hidden=true;(cards[lbI]||lbFrom)?.focus({preventScroll:true})},RM?0:280)}
+function showLb(i){lbI=(i+ART.length)%ART.length;const a=ART[lbI],m=$('#lbMedia');m.replaceChildren(artEl(a));$('#lbMedia').querySelectorAll('video').forEach(v=>v.pause());$('#lbTitle').textContent=a.title;$('#lbLink').href=a.link||'https://www.instagram.com/serene.aiart/';$('#lbNum').textContent=String(lbI+1).padStart(2,'0')+' / '+String(ART.length).padStart(2,'0')}
+function openLb(i,from){lbFrom=from;media.forEach(m=>m&&m.tagName==='VIDEO'&&m.pause());showLb(i);lb.hidden=false;document.documentElement.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>lb.classList.add('open')));$('#lbX').focus({preventScroll:true});ping(4,.05);log('you opened '+ART[lbI].title.toLowerCase(),'art'+i)}
+function closeLb(){$('#lbMedia').querySelectorAll('video').forEach(v=>v.pause());liveI=-1;setTimeout(markSides,RM?0:300);lb.classList.remove('open');document.documentElement.style.overflow='';snapTo(lbI);setTimeout(()=>{lb.hidden=true;(cards[lbI]||lbFrom)?.focus({preventScroll:true})},RM?0:280)}
 $('#lbX').addEventListener('click',closeLb);
 $('#lbPrev').addEventListener('click',()=>{showLb(lbI-1);ping(2,.04)});
 $('#lbNext').addEventListener('click',()=>{showLb(lbI+1);ping(6,.04)});

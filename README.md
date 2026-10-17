@@ -24,6 +24,6 @@ Fonts are Public Sans and Geist Mono from Google Fonts. There are no other depen
 ## Placeholders to fill in
 
 - **Message me**: set `CONTACT_EMAIL` near the bottom of `index.html` to your address. "Send" then opens a pre-filled email to you. Until it's set, the tile tells visitors their message wasn't sent.
-- **serene.aiart gallery**: fill in the `ART` list near the bottom of `index.html`. Each entry takes an image `src` (for example `art/01.jpg`) and a `title`. Until then, soft gradient stand-ins show.
+- **serene.aiart gallery**: three reels from @serene.aiart live in `art/` and are listed in the `ART` array near the bottom of `index.html`, with their caption and post link. To add or swap one, drop a video or image into `art/` and add an entry.
 - `#hollowmere` and `#motion` are placeholder links.
 - The "last posted" line is sample copy.
