@@ -203,7 +203,7 @@ a.tile{display:block;text-decoration:none;color:inherit}
 .ed-bar button:hover{background:var(--tile)}
 .ed-bar button.primary{background:var(--ink);color:var(--bg)}
 .ed-bar button.primary[disabled]{opacity:.35;pointer-events:none}
-.ed-msg{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));translate:-50% 0;z-index:400;font-size:12.5px;color:var(--ink2);background:var(--paper);padding:6px 12px;border-radius:999px;box-shadow:0 0 0 1px var(--line);opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.ed-msg{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));translate:-50% 0;z-index:400;font-size:12.5px;color:var(--ink2);background:var(--paper);padding:8px 14px;border-radius:14px;box-shadow:0 0 0 1px var(--line),0 10px 24px -14px rgba(0,0,0,.3);opacity:0;transition:opacity .25s;pointer-events:none;width:max-content;max-width:min(560px,90vw);text-align:center;line-height:1.45}
 .ed-msg.on{opacity:1}
 .ed-modal{position:fixed;inset:0;z-index:450;display:grid;place-items:center;background:rgba(251,251,250,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:16px}
 .ed-card{width:min(420px,100%);background:var(--paper);border-radius:18px;padding:20px;box-shadow:0 0 0 1px var(--line),0 30px 60px -30px rgba(0,0,0,.4);display:grid;gap:12px}
@@ -845,10 +845,15 @@ addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')closeLb()
   $q('#edForget').addEventListener('click',()=>{tokSet('');unlocked=false;flip(backup);stop();say('Token removed from this browser.')});
   $q('#edSave').addEventListener('click',async()=>{if(!unlocked)return;const btn=$q('#edSave');btn.disabled=true;say('Saving to GitHub…',8000);
     const out={};for(const id of ids){const[c,r,w,h]=L[id];out[id]={col:c+1,row:r+1,w,h}}const json=JSON.stringify({version:1,columns:COLS,tiles:out},null,2)+'\n';
-    try{let sha;const g=await gh(`/repos/${REPO}/contents/${FILE}?ref=${BRANCH}`);if(g.ok)sha=(await g.json()).sha;else if(g.status!==404)throw new Error('read '+g.status);
+    try{let sha;const g=await gh(`/repos/${REPO}/contents/${FILE}?ref=${BRANCH}`);if(g.ok)sha=(await g.json()).sha;else if(g.status!==404){const e=new Error('read');e.status=g.status;e.gh=(await g.json().catch(()=>({}))).message||'';throw e}
       const p=await gh(`/repos/${REPO}/contents/${FILE}`,{method:'PUT',body:JSON.stringify({message:'Update layout from the site editor',content:btoa(unescape(encodeURIComponent(json))),branch:BRANCH,...(sha?{sha}:{})})});
-      if(!p.ok)throw new Error('write '+p.status);btn.disabled=false;stop();say('Saved to GitHub. Visitors see it once your host picks up the commit.',4200)}
-    catch(err){btn.disabled=false;say('Couldn’t save ('+err.message+'). Nothing was changed on GitHub.',5000)}});
+      if(!p.ok){const e=new Error('write');e.status=p.status;e.gh=(await p.json().catch(()=>({}))).message||'';throw e}btn.disabled=false;stop();say('Saved to GitHub. Visitors see it once your host picks up the commit.',4200)}
+    catch(err){btn.disabled=false;const st=err.status,why=
+      st===403||st===404?'This token isn’t allowed to change files. In GitHub → Settings → Developer settings → Fine-grained tokens, set Repository permissions → Contents to “Read and write” (not Read-only), save, then reload with ?edit.':
+      st===401?'GitHub rejected the token. It may have expired; make a new one and reload with ?edit.':
+      st===409||st===422?'layout.json changed on GitHub while you were editing. Reload with ?edit and save again.':
+      !st?'Couldn’t reach GitHub. Check your connection and try again.':'GitHub refused the save.';
+      say(why+(st?' (GitHub '+st+(err.gh?': '+err.gh:'')+')':'')+' Nothing was changed.',14000)}});
   setTimeout(open,400);
 })();
 
