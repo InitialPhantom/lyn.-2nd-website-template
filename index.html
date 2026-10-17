@@ -206,8 +206,8 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
   <aside class="me">
     <canvas class="planet" id="planet" aria-label="A tiny planet. Drag to spin it, tap to switch day and night." role="img"></canvas>
     <h1>Hey, I'm <b>Lyn</b>.</h1>
-    <p class="statement">I make small <span class="hot w-worlds">worlds</span> and quiet <span class="hot w-tools" data-split>tools</span>, <span class="hot w-slow">slowly</span>.</p>
-    <p class="sub">Thirteen pieces live here: worlds to wander, toys to fidget with, and a few notes. <b>Commissions are open</b> for prints, collaborations and custom worlds.</p>
+    <p class="statement">I design <span class="hot w-worlds">concepts</span> and build <span class="hot w-tools" data-split>AI tools</span> and <span class="hot w-slow">plugins</span>.</p>
+    <p class="sub">From rough idea to working product, designed and shipped. <b>Open for freelance</b> and collaborations.</p>
     <div class="last mono">last posted <b>Hedge Hallway, part three</b></div>
     <div class="tabs" role="group" aria-label="Filter pieces">
       <button data-f="all" aria-pressed="true">All<sup>13</sup></button>
@@ -600,7 +600,7 @@ scene($('#motion'),$('#motion canvas'),(c,w,h,t,dt,S)=>{
 $('#stub').addEventListener('click',()=>{const s=$('#stub');if(s.classList.contains('torn'))return;s.classList.add('torn');ping(6,.07);log('you tore a commission stub','tkt');setTimeout(()=>s.classList.remove('torn'),5000)});
 
 /* ---------- word split, filters, theme ---------- */
-$$('[data-split]').forEach(el=>{el.innerHTML=[...el.textContent].map((ch,i)=>`<span style="--i:${i}">${ch}</span>`).join('')});
+$$('[data-split]').forEach(el=>{el.innerHTML=[...el.textContent].map((ch,i)=>`<span style="--i:${i}">${ch===' '?'&nbsp;':ch}</span>`).join('')});
 $$('.tabs button').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.f;$$('.tabs button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$$('.tile,.cap').forEach(t=>t.classList.toggle('off',f!=='all'&&t.dataset.cat!==f))}));
 
 readC();

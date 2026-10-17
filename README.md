@@ -24,4 +24,4 @@ Fonts are Public Sans and Geist Mono from Google Fonts. There are no other depen
 ## Placeholders to fill in
 
 - `#hello` (Say hello), `#hollowmere` and `#motion` are placeholder links.
-- "Commissions are open" and the "last posted" line are sample copy.
+- "Open for freelance" and the "last posted" line are sample copy.
