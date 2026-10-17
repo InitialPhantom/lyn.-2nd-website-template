@@ -15,7 +15,7 @@ To publish it with GitHub Pages, set Pages to deploy from the `main` branch, roo
 ## What's inside
 
 - **Profile**: a spinnable planet avatar (drag to spin, tap for night) and a short intro.
-- **Pieces**: Pond, Baon (Filipino packed lunches), One hand (24-hour clock), Rooms, Weather, Pace, Atlas, Wind, Grow, Hollowmere, Motion, Today's slip (an activity receipt that logs what you do on the page), Message me (a small chat box), and a serene.aiart gallery row that opens each piece in a blurred in-page viewer.
+- **Pieces**: Pond, Baon (Filipino packed lunches), One hand (24-hour clock), Rooms, Weather, Pace, Atlas, Wind, Grow, Hollowmere, Motion, Today's slip (an activity receipt that logs what you do on the page), Message me (a small chat box), and a serene.aiart gallery: portrait cards you drag sideways, shown dithered until you hover, each opening in a blurred in-page viewer.
 - **Pace dial**: speeds up or slows down every animation on the page.
 - **Sound**: soft chimes and an ambient wind loop, made with the Web Audio API. It can be muted from the footer.
 
