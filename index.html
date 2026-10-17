@@ -71,13 +71,13 @@ a{color:inherit}
 .gridwrap{container-type:inline-size;min-width:0}
 .grid{--capH:34px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:calc((100cqi - 3 * var(--gap)) / 4 + var(--capH));column-gap:var(--gap);row-gap:calc(var(--gap) - 6px);
   grid-template-areas:
-  "serene serene baon baon"
-  "serene serene clock rooms"
+  "pond pond baon baon"
+  "pond pond clock rooms"
   "weather weather pace rooms"
   "atlas wind wind grow"
-  "atlas hollow receipt grow"
-  "pond pond receipt motion"
-  "pond pond msg msg"}
+  "atlas hollow serene grow"
+  "receipt hollow serene motion"
+  "receipt msg msg motion"}
 .tile{position:relative;background:var(--tile);border-radius:var(--r);overflow:hidden;min-width:0;align-self:start;height:calc(100% - var(--capH));transition:background .3s,opacity .35s,filter .35s}
 .tile:hover{background:var(--tile-h)}
 .tile.off,.cap.off{opacity:.25;filter:grayscale(1)}
@@ -235,7 +235,7 @@ html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
   body{padding-inline:16px}
   :root{--gap:10px;--r:16px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:calc((100cqi - var(--gap)) / 2 + var(--capH));grid-template-areas:
-  "serene serene" "serene serene" "baon baon" "clock rooms" "pace rooms" "weather weather" "atlas grow" "atlas grow" "wind wind" "hollow motion" "receipt receipt" "msg msg" "pond pond" "pond pond"}
+  "pond pond" "pond pond" "baon baon" "clock rooms" "pace rooms" "weather weather" "atlas grow" "atlas grow" "wind wind" "hollow serene" "motion serene" "receipt receipt" "msg msg"}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -672,7 +672,7 @@ function nearest(){const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,bd=1e
 function snapTo(i){const c=cards[i];rail.scrollTo({left:c.offsetLeft+c.offsetWidth/2-rail.clientWidth/2,behavior:RM?'auto':'smooth'})}
 let liveI=-1;
 function markSides(){const k=nearest();cards.forEach((c,i)=>c.classList.toggle('side',i!==k));if(k!==liveI){liveI=k;media.forEach((m,i)=>{if(m&&m.tagName==='VIDEO'){if(i===k&&document.getElementById('lb').hidden)m.play().catch(()=>{});else m.pause()}})}[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===k))}
-function sizeRail(){const r=sereneT.getBoundingClientRect(),cw=Math.max(100,Math.min(r.width*.6,(r.height-54)*.5625));sereneT.style.setProperty('--cw',cw+'px');requestAnimationFrame(()=>{cards.forEach((c,i)=>ditherCard(c.querySelector('canvas'),i));markSides()})}
+function sizeRail(){const r=sereneT.getBoundingClientRect(),cw=Math.max(100,Math.min(r.width*.74,(r.height-54)*.5625));sereneT.style.setProperty('--cw',cw+'px');requestAnimationFrame(()=>{cards.forEach((c,i)=>ditherCard(c.querySelector('canvas'),i));markSides()})}
 new ResizeObserver(sizeRail).observe(sereneT);
 {let last=0;const vis={on:true};new IntersectionObserver(es=>es.forEach(e=>vis.on=e.isIntersecting)).observe(sereneT);
   (function tick(now){requestAnimationFrame(tick);if(!vis.on||!document.getElementById('lb').hidden||now-last<66)return;last=now;const m=media[liveI];if(m&&m.tagName==='VIDEO'&&!m.paused&&ready(m))ditherCard(cards[liveI].querySelector('canvas'),liveI)})(0)}
